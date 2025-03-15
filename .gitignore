@@ -1,0 +1,46 @@
+# Bytecode files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+env/
+*.env
+*.venv
+
+# Environment variables
+.env
+*.env
+
+# Logs and debugging
+logs/
+*.log
+nohup.out
+
+# Database files
+*.sqlite3
+*.db
+
+# Compiled files
+*.so
+*.pyd
+*.dll
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Flask cache and session data
+instance/
+.cache/
+*.pid
+
+# VS Code settings
+.vscode/
+
+# PyCharm settings
+.idea/
+
+# MacOS & Linux system files
+.DS_Store
+*.swp
+*.swo

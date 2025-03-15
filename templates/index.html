@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            background-image: url('https://media.istockphoto.com/id/1589687099/photo/information-data-blocks-network-concepts.jpg?s=612x612&w=0&k=20&c=H4laOtnMA0UY4G5cShBCnjQrQwcNWDuxeJt5rU8dn2Q='); /* Replace with your AI-themed background image URL */
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay;
+        }
+        .chat-container {
+            width: 450px;
+            max-width: 100%;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(249, 249, 249, 0.9); /* Semi-transparent background */
+        }
+        .message {
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 10px;
+            max-width: 80%;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+        .user-message {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            align-self: flex-end;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .bot-message {
+            background: linear-gradient(135deg, #e1e1e1, #f1f1f1);
+            color: #333;
+            align-self: flex-start;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .chat-footer {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+        }
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-right: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .chat-input:focus {
+            border-color: #007bff;
+        }
+        .send-button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .send-button:not(:disabled):hover {
+            background: linear-gradient(135deg, #0056b3, #007bff);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">AI Chatbot</div>
+        <div class="chat-body" id="chatBody"></div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Type a message..." oninput="toggleButton()">
+            <button id="sendButton" class="send-button" onclick="sendMessage()" disabled>Send</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleButton() {
+            const input = document.getElementById('chatInput');
+            const button = document.getElementById('sendButton');
+            button.disabled = input.value.trim() === '';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const userInput = input.value.trim();
+
+            if (userInput) {
+                displayMessage(userInput, 'user');
+                input.value = '';
+                toggleButton();
+
+                fetch('http://127.0.0.1:5000/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userInput })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        displayMessage(data.message, 'bot');
+                    } else {
+                        displayMessage('Error: No response from bot', 'bot');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayMessage('Error: Unable to connect to server', 'bot');
+                });
+            }
+        }
+
+        function displayMessage(message, sender) {
+            const chatBody = document.getElementById('chatBody');
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${sender}-message`;
+            messageElement.textContent = message;
+            chatBody.appendChild(messageElement);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+    </script>
+</body>
+</html>
