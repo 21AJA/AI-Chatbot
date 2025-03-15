@@ -20,7 +20,7 @@
             background-blend-mode: overlay;
         }
         .chat-container {
-            width: 450px;
+            width: 800px;
             max-width: 100%;
             height: 600px;
             display: flex;
@@ -151,7 +151,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.message) {
-                        displayMessage(data.message, 'bot');
+                        let formattedResponse = formatResponse(data.message);
+                        displayMessage(formattedResponse, 'bot');
                     } else {
                         displayMessage('Error: No response from bot', 'bot');
                     }
@@ -163,13 +164,37 @@
             }
         }
 
+        // function displayMessage(message, sender) {
+        //     const chatBody = document.getElementById('chatBody');
+        //     const messageElement = document.createElement('div');
+        //     messageElement.className = `message ${sender}-message`;
+        //     messageElement.textContent = message;
+        //     chatBody.appendChild(messageElement);
+        //     chatBody.scrollTop = chatBody.scrollHeight;
+        // }
         function displayMessage(message, sender) {
             const chatBody = document.getElementById('chatBody');
             const messageElement = document.createElement('div');
             messageElement.className = `message ${sender}-message`;
-            messageElement.textContent = message;
+            
+            if (sender === 'bot') {
+                messageElement.innerHTML = message; // Render formatted HTML
+            } else {
+                messageElement.textContent = message; // User message should remain plain text
+            }
+
             chatBody.appendChild(messageElement);
             chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function formatResponse(message) {
+            // Convert plain text into structured HTML format
+            let formattedMessage = message
+                .replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>') // Convert **text** to <h3> (Headings)
+                .replace(/\*(.*?)\*/g, '<b>$1</b>') // Convert *text* to <b> (Bold)
+                .replace(/\n/g, '<br>'); // Convert new lines to <br>
+
+            return `<div class="bot-response">${formattedMessage}</div>`;
         }
     </script>
 </body>
